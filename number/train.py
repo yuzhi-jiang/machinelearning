@@ -1,5 +1,5 @@
 import paddle
-from paddle.nn import Linear
+from paddle.nn import Conv2D, MaxPool2D, Linear
 import paddle.nn.functional as F
 import os
 import numpy as np
@@ -11,13 +11,28 @@ class MNIST(paddle.nn.Layer):
     def __init__(self):
         super(MNIST, self).__init__()
 
-        # 定义一层全连接层，输出维度是1
-        self.fc = paddle.nn.Linear(in_features=784, out_features=1)
+        # 定义卷积层，输出特征通道out_channels设置为20，卷积核的大小kernel_size为5，卷积步长stride=1，padding=2
+        self.conv1 = Conv2D(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding=2)
+        # 定义池化层，池化核的大小kernel_size为2，池化步长为2
+        self.max_pool1 = MaxPool2D(kernel_size=2, stride=2)
+        # 定义卷积层，输出特征通道out_channels设置为20，卷积核的大小kernel_size为5，卷积步长stride=1，padding=2
+        self.conv2 = Conv2D(in_channels=20, out_channels=20, kernel_size=5, stride=1, padding=2)
+        # 定义池化层，池化核的大小kernel_size为2，池化步长为2
+        self.max_pool2 = MaxPool2D(kernel_size=2, stride=2)
+        # 定义一层全连接层，输出维度是10
+        self.fc = Linear(in_features=980, out_features=10)
 
     # 定义网络结构的前向计算过程
     def forward(self, inputs):
-        outputs = self.fc(inputs)
-        return outputs
+        x = self.conv1(inputs)
+        x = F.relu(x)
+        x = self.max_pool1(x)
+        x = self.conv2(x)
+        x = F.relu(x)
+        x = self.max_pool2(x)
+        x = paddle.reshape(x, [x.shape[0], -1])
+        x = self.fc(x)
+        return x
 
 
 def norm_img(img):
@@ -27,7 +42,7 @@ def norm_img(img):
     # 归一化图像数据
     img = img / 255
     # 将图像形式reshape为[batch_size, 784]
-    img = paddle.reshape(img, [batch_size, img_h * img_w])
+    img = np.reshape(img, [1, 28 , 28])
 
     return img
 
