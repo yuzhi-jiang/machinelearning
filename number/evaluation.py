@@ -26,6 +26,7 @@ class MNIST(paddle.nn.Layer):
     # 卷积层激活函数使用Relu，全连接层激活函数使用softmax
     def forward(self, inputs, label=None, check_shape=False, check_content=False):
         # 给不同层的输出不同命名，方便调试
+        # print(inputs.shape)
         outputs1 = self.conv1(inputs)
         outputs2 = F.relu(outputs1)
         outputs3 = self.max_pool1(outputs2)
@@ -64,6 +65,7 @@ def load_data(mode='train'):
     elif mode == 'eval':
         imgs = eval_set[0]
         labels = eval_set[1]
+    print("0",labels[0])
     # 获得所有图像的数量
     imgs_length = len(imgs)
     # 验证图像数量和标签数量是否一致
@@ -131,18 +133,17 @@ def evaluation(model):
         images, labels = data
 
         images = paddle.to_tensor(images)
-        labels = paddle.to_tensor(labels)
-        predicts, acc = model(images, labels)
-        loss = F.cross_entropy(input=predicts, label=labels)
-        avg_loss = paddle.mean(loss)
-        acc_set.append(float(acc))
-        avg_loss_set.append(float(avg_loss))
+        # labels = paddle.to_tensor(labels)
+        predicts= model(images[batch_id].reshape([1,1, 28, 28]))
+        predicted_class = paddle.argmax(predicts, axis=1).numpy()[0]
 
+        # loss = F.cross_entropy(input=predicts, label=labels)
+        print(" label:",labels[batch_id],"  lab",predicted_class)
     # 计算多个batch的平均损失和准确率
-    acc_val_mean = np.array(acc_set).mean()
-    avg_loss_val_mean = np.array(avg_loss_set).mean()
+    # acc_val_mean = np.array(acc_set).mean()
+    # avg_loss_val_mean = np.array(avg_loss_set).mean()
 
-    print('loss={}, acc={}'.format(avg_loss_val_mean, acc_val_mean))
+    # print('loss={}, acc={}'.format(avg_loss_val_mean, acc_val_mean))
 
 
 model = MNIST()
