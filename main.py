@@ -103,7 +103,8 @@ def train():
         for iter_id, mini_batch in enumerate(mini_batches):
             x = np.array(mini_batch[:, :-1])  # 获得当前批次训练数据
             y = np.array(mini_batch[:, -1:])  # 获得当前批次训练标签（真实房价）
-            # 将numpy数据转为飞桨动态图tensor形式
+            # 将numpy数据转为飞桨动态图tensor形式'
+            # print(x.shape)
             house_features = paddle.to_tensor(x)
             prices = paddle.to_tensor(y)
 
