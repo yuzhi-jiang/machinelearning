@@ -6,6 +6,9 @@ import pandas as pd
 from faker import Faker
 from random import randint, uniform
 
+from matplotlib import pyplot as plt
+
+
 fake = Faker()
 # num_samples = 10000  # 设定生成样本的数目
 
@@ -33,9 +36,8 @@ def train_test_split(data, ratio):
 # 从数据字典中创建数据框
 # df = pd.DataFrame(data_dict)
 
-
 def get_workData(data):
-    return 3*data[0]+5*data[1]+data[2]+2*data[3]
+    return 3*data[0]+5*data[1]+data[2]+2*data[3]+randint(-3, 3)
 
 
 def get_data(num_samples=1000):
@@ -47,10 +49,14 @@ def get_data(num_samples=1000):
     }
 
     data_dict["working_hours"] = [3 * data_dict["age"][i] + 5 * data_dict["process_type"][i] + \
-                                  data_dict["handling_time"][i] + 2 * data_dict["tool_type"][i] \
+                                  data_dict["handling_time"][i] + 2 * data_dict["tool_type"][i] + randint(-3, 3) \
                                   for i in range(num_samples)]
     # 从数据字典中创建数据框
     df = pd.DataFrame(data_dict)
+    import seaborn as sns
+# 对于所有的因素和工时的关系进行绘图
+    sns.pairplot(df, x_vars=["age", "process_type", "handling_time", "tool_type"], y_vars=["working_hours"])
+    plt.show()
 
     data_array = np.array(list(data_dict.values()))
 
@@ -60,6 +66,21 @@ def get_data(num_samples=1000):
 
 
 data_array = get_data()
+
+# 将结果输出csv
+def data_to_csv():
+    """
+    Save the given data_array as a CSV file.
+
+    :return: None
+    """
+    pd.DataFrame(data_array).to_csv("data.csv", index=False)
+
+
+
+
+
+
 a, b = train_test_split(data_array, 0.8)
 print(a.shape)
 print(a[0])
@@ -68,3 +89,9 @@ print(a[0])
 c=get_workData(a[2][:-1])
 print(a[2][:-1])
 print(c)
+
+
+
+
+
+# y= 3a+5b+c+2d+ rand(-2,2)

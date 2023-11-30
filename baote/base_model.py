@@ -51,9 +51,9 @@ def getModel2():
     model.add(Dense(16, activation='relu'))
     model.add(Dense(16, activation='relu'))
     model.add(Dense(1))
-
+    model.compile(loss="mse", optimizer="adam")
     # 编译模型
-    model.compile(optimizer='rmsprop', loss='mse', metrics=['acc'])
+    # model.compile(optimizer='rmsprop', loss='mse', metrics=['acc'])
     return model
 
 
@@ -98,17 +98,21 @@ def plt_loss(history):
 
 def train():
     model = getModel1()
-    history=model.fit(X_train, y_train, batch_size=100, epochs=1000,validation_data=(X_test, y_test))
-    model.save('model_V3.2.h5')
+    history=model.fit(X_train, y_train, batch_size=100, epochs=500,validation_data=(X_test, y_test))
+    model.save('model_V3.6.h5')
 
-if __name__ == '__main__':
+
+
+
+def main():
     # print(X_train.shape)
     # print(X_train.shape)
 
     # train()
+    #
+    # print(X_train)
 
-
-    model=keras.models.load_model('model_V3.2.h5')
+    model=keras.models.load_model('model_V3.6.h5')
 
 
 
@@ -121,6 +125,15 @@ if __name__ == '__main__':
     test_data1[102]=[0,0,0,0,3]
     test_data1[103]=[0,0,0,0,1]
     test_data1[104]=[0,0,0,0,2]
+
+    test_data1[0][0]=12
+    test_data1[0][4]=get_workData(test_data1[0][:-1])
+    for i in range(1,100):
+        test_data1[i]==test_data1[i-1]
+        test_data1[i][0]=i+1
+        test_data1[i][4]=get_workData(test_data1[i][:-1])
+
+
     X_test1=test_data1[:,:-1]
     y_test1=test_data1[:,-1:]
     X_test1 = np.array(X_test1, dtype=np.float32)
@@ -130,7 +143,7 @@ if __name__ == '__main__':
 
 
     for i in range(0, 10):
-        print(predicted[i],y_test1[i])
+        print(X_test1[i],predicted[i],y_test1[i])
 
     dataf = pd.DataFrame(predicted[:200])
     dataf.columns = ["predict"]
@@ -138,6 +151,5 @@ if __name__ == '__main__':
     dataf.plot(figsize=(15, 5))
     plt.show()
 
-
-
-# model.save("aa.h5")
+if __name__ == '__main__':
+    main()
