@@ -34,6 +34,7 @@ def getModel1():
     # model.add(tf.keras.layers.LSTM(hidden_neurons, batch_input_shape=(None, length_of_sequences, in_out_neurons),
     #                                return_sequences=False))
     model.add(Dense(1,input_shape=(4,)))
+
     # model.add(Activation("linear"))
     # model.add(Dense(4,activation='relu'))
     # model.add(Dense(4,activation='relu'))
@@ -97,7 +98,7 @@ def plt_loss(history):
 
 
 def train():
-    model = getModel1()
+    model = getModel2()
     history=model.fit(X_train, y_train, batch_size=100, epochs=500,validation_data=(X_test, y_test))
     model.save('model_V3.6.h5')
 
@@ -109,8 +110,7 @@ def main():
     # print(X_train.shape)
 
     # train()
-    #
-    # print(X_train)
+
 
     model=keras.models.load_model('model_V3.6.h5')
 
@@ -149,6 +149,13 @@ def main():
     dataf.columns = ["predict"]
     dataf["input"] = y_test1[:200]
     dataf.plot(figsize=(15, 5))
+    plt.show()
+
+
+    x=range(0,2000)
+    plt.figure();
+    plt.plot(x,predicted[:2000],'ro')
+    plt.plot(x,y_test1[:2000],'bo')
     plt.show()
 
 if __name__ == '__main__':
